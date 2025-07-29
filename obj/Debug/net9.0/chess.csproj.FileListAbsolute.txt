@@ -1,0 +1,14 @@
+/Users/brock/Projects/cs/chess/bin/Debug/net9.0/chess
+/Users/brock/Projects/cs/chess/bin/Debug/net9.0/chess.deps.json
+/Users/brock/Projects/cs/chess/bin/Debug/net9.0/chess.runtimeconfig.json
+/Users/brock/Projects/cs/chess/bin/Debug/net9.0/chess.dll
+/Users/brock/Projects/cs/chess/bin/Debug/net9.0/chess.pdb
+/Users/brock/Projects/cs/chess/obj/Debug/net9.0/chess.GeneratedMSBuildEditorConfig.editorconfig
+/Users/brock/Projects/cs/chess/obj/Debug/net9.0/chess.AssemblyInfoInputs.cache
+/Users/brock/Projects/cs/chess/obj/Debug/net9.0/chess.AssemblyInfo.cs
+/Users/brock/Projects/cs/chess/obj/Debug/net9.0/chess.csproj.CoreCompileInputs.cache
+/Users/brock/Projects/cs/chess/obj/Debug/net9.0/chess.dll
+/Users/brock/Projects/cs/chess/obj/Debug/net9.0/refint/chess.dll
+/Users/brock/Projects/cs/chess/obj/Debug/net9.0/chess.pdb
+/Users/brock/Projects/cs/chess/obj/Debug/net9.0/chess.genruntimeconfig.cache
+/Users/brock/Projects/cs/chess/obj/Debug/net9.0/ref/chess.dll
