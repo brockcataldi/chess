@@ -7,16 +7,29 @@ class Display
             Console.WriteLine();
         }
     }
+
+    public static void DrawSpace(string piece, ConsoleColor pieceColor, ConsoleColor spaceColor)
+    {
+        Console.ForegroundColor = spaceColor;
+        Console.Write("[");
+        Console.ForegroundColor = pieceColor;
+        Console.Write(piece);
+        Console.ForegroundColor = spaceColor;
+        Console.Write("]");
+        Console.ResetColor();
+    }
     public static void Draw(Piece?[][] board)
     {
-        Console.Clear();
+        // Console.Clear();
         VerticalPadding(2);
         Console.WriteLine("    A  B  C  D  E  F  G  H ");
+
         for (int i = 0; i < 8; i++)
         {
             bool iOffset = i % 2 == 0;
 
             Console.Write($" {i + 1} ");
+            
             for (int j = 0; j < 8; j++)
             {
                 bool jOffset = j % 2 == 0;
@@ -36,18 +49,12 @@ class Display
                     pieceColor = (space.Color) ? ConsoleColor.Yellow : ConsoleColor.DarkBlue;
                 }
 
-
-                Console.ForegroundColor = spaceColor;
-                Console.Write("[");
-                Console.ForegroundColor = pieceColor;
-                Console.Write(piece);
-                Console.ForegroundColor = spaceColor;
-                Console.Write("]");
-                Console.ResetColor();
+                DrawSpace(piece, pieceColor, spaceColor);
             }
 
             Console.Write(Environment.NewLine);
         }
+
         VerticalPadding(2);
     }
 }
