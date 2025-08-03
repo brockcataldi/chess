@@ -1,27 +1,5 @@
 using System.Text.RegularExpressions;
 
-enum CommandParserResultType
-{
-    Move,
-    Error
-}
-
-class CommandParserResult(CommandParserResultType type)
-{
-    public CommandParserResultType Type { get; init; } = type;
-}
-
-class ErrorCommandParserResult(string message) : CommandParserResult(CommandParserResultType.Error)
-{
-   public string Message { get; init; } = message;
-}
-
-class MoveCommandParserResult(Position start, Position end) : CommandParserResult(CommandParserResultType.Move)
-{
-    public Position Start { get; init; } = start;
-    public Position End { get; init; } = end;
-}
-
 partial class CommandParser
 {
     public static char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -47,12 +25,12 @@ partial class CommandParser
         {
             Match match = LongNotation().Match(command);
 
-            return new MoveCommandParserResult(
+            return new CommandParserResultMove(
                 ParsePosition(match.Groups[1].Value),
                 ParsePosition(match.Groups[2].Value)
             );
         }
 
-        return new ErrorCommandParserResult("Invalid Command");
+        return new CommandParserResultError("Invalid Command");
     }
 }

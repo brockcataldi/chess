@@ -18,7 +18,7 @@ class Display
         Console.Write("]");
         Console.ResetColor();
     }
-    public static void Draw(Piece?[][] board)
+    public static void Draw(Piece?[][] board, EntryResult entry)
     {
         // Console.Clear();
         VerticalPadding(2);
@@ -55,6 +55,16 @@ class Display
             Console.Write(Environment.NewLine);
         }
 
-        VerticalPadding(2);
+        if (entry is EntryResultError error)
+        {
+            VerticalPadding(1);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(error.Message);
+            Console.ResetColor();
+        }
+        else
+        {
+            VerticalPadding(2);
+        }
     }
 }

@@ -1,37 +1,87 @@
+/// <summary>
+/// The Pawn Piece
+/// </summary>
+/// <param name="color">The color of the piece</param>
+/// <param name="rank">The rank position</param>
+/// <param name="file">The file position</param>
 class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
 {
+    /// <summary>
+    /// Whether on not the pawn is on the starting position
+    /// </summary>
     public bool StartingPosition { get; set; } = true;
 
+    /// <summary>
+    /// Whether or not the pawn can be enpassantable.
+    /// </summary>
     public bool EnPassant { get; set; } = false;
 
-    public override bool CanMove(Position to, Piece?[][] board)
+    /// <summary>
+    /// Whether or not the move is valid.
+    /// </summary>
+    /// <param name="to">Where the pawn is supposed to move to.</param>
+    /// <param name="board">The current state of the board.</param>
+    /// <returns></returns>
+    public override CanMoveResult CanMove(Position to, Piece?[][] board)
     {
-        // attack positions include rank +1 file+1 or rank+1 file-1;
+        // TODO: Add Enpassant 
+        int rankDistance = Color ? to.Rank - Rank : Rank - to.Rank;
+        int fileDistance = Math.Abs(to.File - File);
+        int direction = Color ? 1 : -1;
 
-        int distance = Color ? to.Rank - Rank: Rank - to.Rank;
-
-        if (StartingPosition && distance == 2)
+        if (StartingPosition && rankDistance == 2)
         {
-            return board[Color ? Rank + 1 : Rank - 1][File] == null
-                && board[Color ? Rank + 2 : Rank - 2][File] == null;
-        }
-
-        if (distance == 1)
-        {
-            bool withinBounds = Color ? (Rank + 1) < 7 : (Rank - 1) > -1;
-
-            if (withinBounds)
+            if (board[Rank + direction][File] == null
+            && board[to.Rank][File] == null)
             {
-                return board[Color ? Rank + 1 : Rank - 1][File] == null;
+                return new CanMoveResultValid();
             }
         }
 
-        return false;
+        if (rankDistance == 1)
+        {
+            if (fileDistance == 0)
+            {
+                bool withinBounds = Color ? (Rank + 1) < 7 : (Rank - 1) > -1;
+
+                if (withinBounds && board[to.Rank][File] == null)
+                {
+                    return new CanMoveResultValid();
+                }
+            }
+
+            if (fileDistance == 1)
+            {
+                Piece? target = board[to.Rank][to.File];
+
+                if (target != null && target.Color != Color)
+                {
+                    return new CanMoveResultValid();
+                }
+
+                Piece? enPassant = board[Rank][to.File]; 
+                if (enPassant != null )
+                {
+                    if (enPassant is Pawn pawn && pawn.EnPassant && pawn.Color != Color)
+                    {
+                        return new CanMoveResultEnPassant(new Position(pawn.Rank, pawn.File));
+                    }
+                }
+            }
+        }
+
+        return new CanMoveResultError("Invalid Move");
     }
 
-    public override Piece Move(Position to, Piece?[][] board)
+    /// <summary>
+    /// Updating internal mechanisms of the piece. 
+    /// </summary>
+    /// <param name="to">The move location.</param>
+    /// <param name="board">The state of the board.</param>
+    /// <returns>The current pawn</returns>
+    public override Piece Move(Position to)
     {
-        int distance = Color ? to.Rank - Rank: Rank - to.Rank;
+        int distance = Color ? to.Rank - Rank : Rank - to.Rank;
 
         if (StartingPosition == true && distance == 2)
         {

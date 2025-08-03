@@ -4,7 +4,6 @@ class GameScreen : IScreen
 
     public GameScreen()
     {
-        // This is hella ugly make this more elegant
         this.Board = [
             [.. Enumerable.Repeat<Piece?>(null, 8)],
             [
@@ -35,39 +34,42 @@ class GameScreen : IScreen
         ];
     }
 
-    public void Move(MoveCommandParserResult move)
+    public EntryResult Move(CommandParserResultMove move)
     {
         Piece? space = this.Board[move.Start.Rank][move.Start.File];
 
         if (space == null)
         {
-            Console.WriteLine("Invalid Space");
-            // Error empty space
-            return;
+            return new EntryResultError("Invalid Space");
         }
 
-        if (space.CanMove(move.End, this.Board))
-        {
-            this.Board[move.Start.Rank][move.Start.File] = null;
-            space.Move(move.End, this.Board);
-            this.Board[move.End.Rank][move.End.File] = space;
-            // we'll need to check to see if the king is checked
-            return;
+        CanMoveResult canMove = space.CanMove(move.End, this.Board);
+
+        switch (canMove) {
+            case CanMoveResultValid:
+                Board[move.Start.Rank][move.Start.File] = null;
+                Board[move.End.Rank][move.End.File] = space.Move(move.End);
+                return new EntryResultValid();
+            case CanMoveResultEnPassant enPassant:
+                Board[move.Start.Rank][move.Start.File] = null;
+                Board[enPassant.Position.Rank][enPassant.Position.File] = null;
+                Board[move.End.Rank][move.End.File] = space.Move(move.End);
+                return new EntryResultValid();
+            case CanMoveResultError error:
+                return new EntryResultError(error.Message);
         }
 
-        Console.WriteLine("Invalid Move");
-        // Error invalid move
-        return;
+        return new EntryResultError("Invalid Move");
     }
 
     public void Render(Game game)
     {
         bool running = false;
-
+        EntryResult previousEntry = new EntryResultValid();
 
         while (!running)
         {
-            Display.Draw(this.Board);
+            Display.Draw(Board, previousEntry);
             Console.Write("Enter Move or Command: ");
             string? response = Console.ReadLine();
 
@@ -80,13 +82,12 @@ class GameScreen : IScreen
 
             switch (result)
             {
-                case MoveCommandParserResult move:
-                    Move(move);
+                case CommandParserResultMove move:
+                    previousEntry = Move(move);
                     break;
 
-                case ErrorCommandParserResult error:
-                    // Move this to display properly
-                    Console.WriteLine(error.Message);
+                case CommandParserResultError error:
+                    previousEntry = new EntryResultError(error.Message);
                     break;
 
                 default:
