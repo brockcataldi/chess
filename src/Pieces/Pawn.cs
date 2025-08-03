@@ -21,10 +21,9 @@ class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
     /// </summary>
     /// <param name="to">Where the pawn is supposed to move to.</param>
     /// <param name="board">The current state of the board.</param>
-    /// <returns></returns>
+    /// <returns>CanMoveResult</returns>
     public override CanMoveResult CanMove(Position to, Piece?[][] board)
     {
-        // TODO: Add Enpassant 
         int rankDistance = Color ? to.Rank - Rank : Rank - to.Rank;
         int fileDistance = Math.Abs(to.File - File);
         int direction = Color ? 1 : -1;
@@ -42,8 +41,14 @@ class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
         {
             if (fileDistance == 0)
             {
-                bool withinBounds = Color ? (Rank + 1) < 7 : (Rank - 1) > -1;
+                bool withinBounds = Color ? (Rank + 1) < 7 : (Rank - 1) > 0;
+                bool shouldPromote = Color ? (Rank + 1) == 7 : (Rank - 1) == 0;
 
+                if (shouldPromote)
+                {
+                    return new CanMoveResultPromote();
+                }
+                
                 if (withinBounds && board[to.Rank][File] == null)
                 {
                     return new CanMoveResultValid();
@@ -53,7 +58,6 @@ class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
             if (fileDistance == 1)
             {
                 Piece? target = board[to.Rank][to.File];
-
                 if (target != null && target.Color != Color)
                 {
                     return new CanMoveResultValid();
@@ -78,7 +82,7 @@ class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
     /// </summary>
     /// <param name="to">The move location.</param>
     /// <param name="board">The state of the board.</param>
-    /// <returns>The current pawn</returns>
+    /// <returns>Updated Pawn</returns>
     public override Piece Move(Position to)
     {
         int distance = Color ? to.Rank - Rank : Rank - to.Rank;

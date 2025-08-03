@@ -12,3 +12,4 @@
 /Users/brock/Projects/cs/chess/obj/Debug/net9.0/chess.pdb
 /Users/brock/Projects/cs/chess/obj/Debug/net9.0/chess.genruntimeconfig.cache
 /Users/brock/Projects/cs/chess/obj/Debug/net9.0/ref/chess.dll
+/Users/brock/Projects/cs/chess/obj/Debug/net9.0/chess.sourcelink.json

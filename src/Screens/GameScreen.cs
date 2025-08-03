@@ -1,7 +1,16 @@
+/// <summary>
+/// 
+/// </summary>
 class GameScreen : IScreen
 {
+    /// <summary>
+    /// 
+    /// </summary>
     Piece?[][] Board { get; init; }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public GameScreen()
     {
         this.Board = [
@@ -34,34 +43,91 @@ class GameScreen : IScreen
         ];
     }
 
+    public static Piece? CreatePieceByChar(char piece, bool color, int rank, int file)
+    {
+        return piece switch
+        {
+            'b' => new Bishop(color, rank, file),
+            'n' => new Knight(color, rank, file),
+            'q' => new Queen(color, rank, file),
+            'r' => new Rook(color, rank, file),
+            _ => null,
+        };
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="move"></param>
+    /// <returns></returns>
     public EntryResult Move(CommandParserResultMove move)
     {
-        Piece? space = this.Board[move.Start.Rank][move.Start.File];
+        Piece? space = Board[move.Start.Rank][move.Start.File];
 
         if (space == null)
         {
-            return new EntryResultError("Invalid Space");
+            return new EntryResultError("Invalid Space.");
         }
 
-        CanMoveResult canMove = space.CanMove(move.End, this.Board);
-
-        switch (canMove) {
+        switch (space.CanMove(move.End, Board))
+        {
             case CanMoveResultValid:
                 Board[move.Start.Rank][move.Start.File] = null;
                 Board[move.End.Rank][move.End.File] = space.Move(move.End);
                 return new EntryResultValid();
+
             case CanMoveResultEnPassant enPassant:
                 Board[move.Start.Rank][move.Start.File] = null;
                 Board[enPassant.Position.Rank][enPassant.Position.File] = null;
                 Board[move.End.Rank][move.End.File] = space.Move(move.End);
                 return new EntryResultValid();
+
+            case CanMoveResultPromote:
+                return new EntryResultError("You need to add a piece character to promote.");
+
             case CanMoveResultError error:
                 return new EntryResultError(error.Message);
-        }
 
-        return new EntryResultError("Invalid Move");
+            default:
+                return new EntryResultError("Invalid Move.");
+        }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="move"></param>
+    /// <returns></returns>
+    public EntryResult Promote(CommandParserResultPromotion move)
+    {
+        Piece? space = Board[move.Start.Rank][move.Start.File];
+
+        if (space == null)
+        {
+            return new EntryResultError("Invalid Space.");
+        }
+
+        switch (space.CanMove(move.End, Board))
+        {
+            case CanMoveResultPromote:
+                Console.WriteLine("Promote");
+                Board[move.Start.Rank][move.Start.File] = null;
+                Board[move.End.Rank][move.End.File] = CreatePieceByChar(move.Promotion, space.Color, move.End.Rank, move.End.File);
+                return new EntryResultValid();
+
+            case CanMoveResultError error:
+                return new EntryResultError(error.Message);
+            case CanMoveResultEnPassant:
+            case CanMoveResultValid:
+            default:
+                return new EntryResultError("Invalid Move.");
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="game"></param>
     public void Render(Game game)
     {
         bool running = false;
@@ -86,13 +152,16 @@ class GameScreen : IScreen
                     previousEntry = Move(move);
                     break;
 
-                case CommandParserResultError error:
-                    previousEntry = new EntryResultError(error.Message);
+                case CommandParserResultPromotion move:
+                    previousEntry = Promote(move);
                     break;
 
-                default:
+                case CommandParserResultError error:
+                    previousEntry = new EntryResultError(error.Message);
                     break;
             }
         }
     }
+
+
 }

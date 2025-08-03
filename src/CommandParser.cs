@@ -6,8 +6,11 @@ partial class CommandParser
 
     public static char[] ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
-    [GeneratedRegex(@"([a-h][1-8])(?:\s|-)?([a-h][1-8])")]
+    [GeneratedRegex(@"^([a-h][1-8])(?:\s|-)?([a-h][1-8])$")]
     public static partial Regex LongNotation();
+
+    [GeneratedRegex(@"^([a-h][1-8])(?:\s|-)?([a-h][1-8])(?:\s|-)?([bnqr])$")]
+    public static partial Regex LongNotationPromotion();
 
     public static Position ParsePosition(string position)
     {
@@ -28,6 +31,16 @@ partial class CommandParser
             return new CommandParserResultMove(
                 ParsePosition(match.Groups[1].Value),
                 ParsePosition(match.Groups[2].Value)
+            );
+        }
+
+        if (LongNotationPromotion().IsMatch(command))
+        {
+            Match match = LongNotationPromotion().Match(command);
+            return new CommandParserResultPromotion(
+                ParsePosition(match.Groups[1].Value),
+                ParsePosition(match.Groups[2].Value),
+                match.Groups[3].Value[0] // quick cast
             );
         }
 
