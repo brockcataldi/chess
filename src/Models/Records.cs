@@ -1,5 +1,3 @@
-record Position(int Rank, int File);
-
 abstract record EntryResult;
 record EntryResultValid: EntryResult;
 record EntryResultError(string Message): EntryResult;

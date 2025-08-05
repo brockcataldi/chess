@@ -19,7 +19,7 @@ class GameScreen : IScreen
         for (int i = 0; i < 8; i++)
         {
             Board[1,i] = new Pawn(true, 1, i);
-            Board[1,i] = new Pawn(false, 6, i); 
+            Board[6,i] = new Pawn(false, 6, i); 
         }
 
         Board[0,0] = new Rook(true, 0, 0);

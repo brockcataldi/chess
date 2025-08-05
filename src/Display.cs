@@ -20,7 +20,7 @@ class Display
     }
     public static void Draw(Piece?[,] board, EntryResult entry)
     {
-        Console.Clear();
+        // Console.Clear();
         VerticalPadding(2);
         Console.WriteLine("    A  B  C  D  E  F  G  H ");
 

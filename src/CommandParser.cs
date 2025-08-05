@@ -5,14 +5,7 @@ using System.Text.RegularExpressions;
 /// </summary>
 partial class CommandParser
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public static char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-    /// <summary>
-    /// 
-    /// </summary>
-    public static char[] ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
     /// <summary>
     /// 
     /// </summary>
@@ -33,8 +26,8 @@ partial class CommandParser
     public static Position ParsePosition(string position)
     {
         return new Position(
-            Array.IndexOf(ranks, position[1]),
-            Array.IndexOf(files, position[0])
+            Array.IndexOf(Constants.RANKS, position[1]),
+            Array.IndexOf(Constants.FILES, position[0])
         );
     }
     /// <summary>
