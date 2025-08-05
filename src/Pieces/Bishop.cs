@@ -1,6 +1,6 @@
-class Bishop(bool color, int rank, int file) : Piece('b', color, rank, file)
+class Bishop(bool color, int rank, int file) : Piece('B', color, rank, file)
 {
-    public override CanMoveResult CanMove(Position to, Piece?[][] board)
+    public override CanMoveResult CanMove(Position to, Piece?[,] board)
     {
         throw new NotImplementedException();
     }

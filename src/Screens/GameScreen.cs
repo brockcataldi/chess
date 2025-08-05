@@ -1,48 +1,57 @@
 /// <summary>
-/// 
+/// The game screen
 /// </summary>
 class GameScreen : IScreen
 {
     /// <summary>
-    /// 
+    /// The interal board state
     /// </summary>
-    Piece?[][] Board { get; init; }
+    Piece?[,] Board { get; init; }
 
     /// <summary>
-    /// 
+    /// Builds the board
     /// </summary>
     public GameScreen()
     {
-        this.Board = [
-            [.. Enumerable.Repeat<Piece?>(null, 8)],
-            [
-                new Pawn(true, 1, 0),
-                new Pawn(true, 1, 1),
-                new Pawn(true, 1, 2),
-                new Pawn(true, 1, 3),
-                new Pawn(true, 1, 4),
-                new Pawn(true, 1, 5),
-                new Pawn(true, 1, 6),
-                new Pawn(true, 1, 7)
-            ],
-            [.. Enumerable.Repeat<Piece?>(null, 8)],
-            [.. Enumerable.Repeat<Piece?>(null, 8)],
-            [.. Enumerable.Repeat<Piece?>(null, 8)],
-            [.. Enumerable.Repeat<Piece?>(null, 8)],
-            [
-                new Pawn(false, 6, 0),
-                new Pawn(false, 6, 1),
-                new Pawn(false, 6, 2),
-                new Pawn(false, 6, 3),
-                new Pawn(false, 6, 4),
-                new Pawn(false, 6, 5),
-                new Pawn(false, 6, 6),
-                new Pawn(false, 6, 7)
-            ],
-            [.. Enumerable.Repeat<Piece?>(null, 8)]
-        ];
+        this.Board = new Piece?[8,8];
+
+        // Initialize pawns
+        for (int i = 0; i < 8; i++)
+        {
+            Board[1,i] = new Pawn(true, 1, i);
+            Board[1,i] = new Pawn(false, 6, i); 
+        }
+
+        Board[0,0] = new Rook(true, 0, 0);
+        Board[0,7] = new Rook(true, 0, 7);
+        Board[7,0] = new Rook(false, 7, 0);
+        Board[7,7] = new Rook(false, 7, 7);
+
+        Board[0,1] = new Knight(true, 0, 1);
+        Board[0,6] = new Knight(true, 0, 6);
+        Board[7,1] = new Knight(false, 7, 1);
+        Board[7,6] = new Knight(false, 7, 6);
+
+        Board[0,2] = new Bishop(true, 0, 2);
+        Board[0,5] = new Bishop(true, 0, 5);
+        Board[7,2] = new Bishop(false, 7, 2);
+        Board[7,5] = new Bishop(false, 7, 5);
+
+        Board[0,3] = new Queen(true, 0, 3);
+        Board[7,3] = new Queen(false, 7, 3);
+
+        Board[0,4] = new King(true, 0, 4);
+        Board[7,4] = new King(false, 7, 4);
     }
 
+    /// <summary>
+    /// Creates a new piece based on a character, either 'b', 'n', 'q', 'r'
+    /// </summary>
+    /// <param name="piece">The piece to create</param>
+    /// <param name="color">The color of the piece</param>
+    /// <param name="rank">The rank of the piece</param>
+    /// <param name="file">The file of the piece</param>
+    /// <returns>Piece or null</returns>
     public static Piece? CreatePieceByChar(char piece, bool color, int rank, int file)
     {
         return piece switch
@@ -56,13 +65,13 @@ class GameScreen : IScreen
     }
 
     /// <summary>
-    /// 
+    /// Runs a standard move.
     /// </summary>
     /// <param name="move"></param>
-    /// <returns></returns>
+    /// <returns>EntryResult depending on what happened.</returns>
     public EntryResult Move(CommandParserResultMove move)
     {
-        Piece? space = Board[move.Start.Rank][move.Start.File];
+        Piece? space = Board[move.Start.Rank,move.Start.File];
 
         if (space == null)
         {
@@ -72,14 +81,14 @@ class GameScreen : IScreen
         switch (space.CanMove(move.End, Board))
         {
             case CanMoveResultValid:
-                Board[move.Start.Rank][move.Start.File] = null;
-                Board[move.End.Rank][move.End.File] = space.Move(move.End);
+                Board[move.Start.Rank,move.Start.File] = null;
+                Board[move.End.Rank,move.End.File] = space.Move(move.End);
                 return new EntryResultValid();
 
             case CanMoveResultEnPassant enPassant:
-                Board[move.Start.Rank][move.Start.File] = null;
-                Board[enPassant.Position.Rank][enPassant.Position.File] = null;
-                Board[move.End.Rank][move.End.File] = space.Move(move.End);
+                Board[move.Start.Rank,move.Start.File] = null;
+                Board[enPassant.Position.Rank,enPassant.Position.File] = null;
+                Board[move.End.Rank,move.End.File] = space.Move(move.End);
                 return new EntryResultValid();
 
             case CanMoveResultPromote:
@@ -94,13 +103,13 @@ class GameScreen : IScreen
     }
 
     /// <summary>
-    /// 
+    /// Runs a promotion move.
     /// </summary>
     /// <param name="move"></param>
-    /// <returns></returns>
+    /// <returns>EntryResult depending on what happened.</returns>
     public EntryResult Promote(CommandParserResultPromotion move)
     {
-        Piece? space = Board[move.Start.Rank][move.Start.File];
+        Piece? space = Board[move.Start.Rank,move.Start.File];
 
         if (space == null)
         {
@@ -111,8 +120,8 @@ class GameScreen : IScreen
         {
             case CanMoveResultPromote:
                 Console.WriteLine("Promote");
-                Board[move.Start.Rank][move.Start.File] = null;
-                Board[move.End.Rank][move.End.File] = CreatePieceByChar(move.Promotion, space.Color, move.End.Rank, move.End.File);
+                Board[move.Start.Rank,move.Start.File] = null;
+                Board[move.End.Rank,move.End.File] = CreatePieceByChar(move.Promotion, space.Color, move.End.Rank, move.End.File);
                 return new EntryResultValid();
 
             case CanMoveResultError error:
@@ -125,7 +134,7 @@ class GameScreen : IScreen
     }
 
     /// <summary>
-    /// 
+    /// Rendering the game loop.
     /// </summary>
     /// <param name="game"></param>
     public void Render(Game game)
@@ -139,29 +148,21 @@ class GameScreen : IScreen
             Console.Write("Enter Move or Command: ");
             string? response = Console.ReadLine();
 
-            if (response == null)
+            if (response == null || response == "")
             {
+                previousEntry = new EntryResultError("Try Again");
                 continue;
             }
 
             CommandParserResult result = CommandParser.Parse(response);
 
-            switch (result)
+            previousEntry = result switch
             {
-                case CommandParserResultMove move:
-                    previousEntry = Move(move);
-                    break;
-
-                case CommandParserResultPromotion move:
-                    previousEntry = Promote(move);
-                    break;
-
-                case CommandParserResultError error:
-                    previousEntry = new EntryResultError(error.Message);
-                    break;
-            }
+                CommandParserResultMove move =>  Move(move),
+                CommandParserResultPromotion move => Promote(move),
+                CommandParserResultError error =>  new EntryResultError(error.Message),
+                _ => new EntryResultError("Try Again")
+            };
         }
     }
-
-
 }

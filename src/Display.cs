@@ -18,9 +18,9 @@ class Display
         Console.Write("]");
         Console.ResetColor();
     }
-    public static void Draw(Piece?[][] board, EntryResult entry)
+    public static void Draw(Piece?[,] board, EntryResult entry)
     {
-        // Console.Clear();
+        Console.Clear();
         VerticalPadding(2);
         Console.WriteLine("    A  B  C  D  E  F  G  H ");
 
@@ -40,7 +40,7 @@ class Display
                     spaceColor = (jOffset) ? ConsoleColor.White : ConsoleColor.Green;
                 }
 
-                Piece? space = board[i][j];
+                Piece? space = board[i,j];
                 string piece = " ";
                 ConsoleColor pieceColor = ConsoleColor.White;
                 if (space != null)

@@ -1,17 +1,35 @@
 using System.Text.RegularExpressions;
 
+/// <summary>
+/// 
+/// </summary>
 partial class CommandParser
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static char[] files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-
+    /// <summary>
+    /// 
+    /// </summary>
     public static char[] ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     [GeneratedRegex(@"^([a-h][1-8])(?:\s|-)?([a-h][1-8])$")]
     public static partial Regex LongNotation();
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     [GeneratedRegex(@"^([a-h][1-8])(?:\s|-)?([a-h][1-8])(?:\s|-)?([bnqr])$")]
     public static partial Regex LongNotationPromotion();
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     public static Position ParsePosition(string position)
     {
         return new Position(
@@ -19,7 +37,11 @@ partial class CommandParser
             Array.IndexOf(files, position[0])
         );
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
     public static CommandParserResult Parse(string text)
     {
         string command = text.ToLower().Trim();

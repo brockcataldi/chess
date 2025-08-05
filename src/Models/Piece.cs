@@ -4,6 +4,6 @@ abstract class Piece(char symbol, bool color, int rank, int file)
     public int File { get; set; } = file;
     public char Symbol { get; init; } = symbol;
     public bool Color { get; init; } = color;
-    public abstract CanMoveResult CanMove(Position to, Piece?[][] board);   
+    public abstract CanMoveResult CanMove(Position to, Piece?[,] board);   
     public abstract Piece Move(Position to);   
 }

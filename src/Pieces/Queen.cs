@@ -1,6 +1,6 @@
-class Queen(bool color, int rank, int file) : Piece('q', color, rank, file)
+class Queen(bool color, int rank, int file) : Piece('Q', color, rank, file)
 {
-    public override CanMoveResult CanMove(Position to, Piece?[][] board)
+    public override CanMoveResult CanMove(Position to, Piece?[,] board)
     {
         throw new NotImplementedException();
     }

@@ -1,6 +1,6 @@
-class Rook(bool color, int rank, int file) : Piece('r', color, rank, file)
+class Rook(bool color, int rank, int file) : Piece('R', color, rank, file)
 {
-    public override CanMoveResult CanMove(Position to, Piece?[][] board)
+    public override CanMoveResult CanMove(Position to, Piece?[,] board)
     {
         throw new NotImplementedException();
     }

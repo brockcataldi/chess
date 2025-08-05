@@ -4,7 +4,7 @@
 /// <param name="color">The color of the piece</param>
 /// <param name="rank">The rank position</param>
 /// <param name="file">The file position</param>
-class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
+class Pawn(bool color, int rank, int file) : Piece('P', color, rank, file)
 {
     /// <summary>
     /// Whether on not the pawn is on the starting position
@@ -22,7 +22,7 @@ class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
     /// <param name="to">Where the pawn is supposed to move to.</param>
     /// <param name="board">The current state of the board.</param>
     /// <returns>CanMoveResult</returns>
-    public override CanMoveResult CanMove(Position to, Piece?[][] board)
+    public override CanMoveResult CanMove(Position to, Piece?[,] board)
     {
         int rankDistance = Color ? to.Rank - Rank : Rank - to.Rank;
         int fileDistance = Math.Abs(to.File - File);
@@ -30,8 +30,8 @@ class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
 
         if (StartingPosition && rankDistance == 2)
         {
-            if (board[Rank + direction][File] == null
-            && board[to.Rank][File] == null)
+            if (board[Rank + direction,File] == null
+            && board[to.Rank, File] == null)
             {
                 return new CanMoveResultValid();
             }
@@ -41,7 +41,6 @@ class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
         {
             if (fileDistance == 0)
             {
-                bool withinBounds = Color ? (Rank + 1) < 7 : (Rank - 1) > 0;
                 bool shouldPromote = Color ? (Rank + 1) == 7 : (Rank - 1) == 0;
 
                 if (shouldPromote)
@@ -49,7 +48,7 @@ class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
                     return new CanMoveResultPromote();
                 }
                 
-                if (withinBounds && board[to.Rank][File] == null)
+                if (board[to.Rank,File] == null)
                 {
                     return new CanMoveResultValid();
                 }
@@ -57,13 +56,13 @@ class Pawn(bool color, int rank, int file) : Piece('p', color, rank, file)
 
             if (fileDistance == 1)
             {
-                Piece? target = board[to.Rank][to.File];
+                Piece? target = board[to.Rank,to.File];
                 if (target != null && target.Color != Color)
                 {
                     return new CanMoveResultValid();
                 }
 
-                Piece? enPassant = board[Rank][to.File]; 
+                Piece? enPassant = board[Rank,to.File]; 
                 if (enPassant != null )
                 {
                     if (enPassant is Pawn pawn && pawn.EnPassant && pawn.Color != Color)
