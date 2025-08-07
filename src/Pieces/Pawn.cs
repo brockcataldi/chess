@@ -1,9 +1,9 @@
 /// <summary>
-/// The Pawn Piece
+/// Pawn Piece
 /// </summary>
-/// <param name="color">The color of the piece</param>
-/// <param name="rank">The rank position</param>
-/// <param name="file">The file position</param>
+/// <param name="color">The Color of the Pawn</param>
+/// <param name="rank">Rank of the Pawn</param>
+/// <param name="file">File of the Pawn</param>
 class Pawn(bool color, int rank, int file) : Piece('P', color, rank, file)
 {
     /// <summary>
@@ -17,11 +17,11 @@ class Pawn(bool color, int rank, int file) : Piece('P', color, rank, file)
     public bool EnPassant { get; set; } = false;
 
     /// <summary>
-    /// Whether or not the move is valid.
+    /// Whether or not the Pawn can move to a space
     /// </summary>
-    /// <param name="to">Where the pawn is supposed to move to.</param>
-    /// <param name="board">The current state of the board.</param>
-    /// <returns>CanMoveResult</returns>
+    /// <param name="to">The position to move to</param>
+    /// <param name="board">The current board</param>
+    /// <returns>Whether or not a piece can move, and why not.</returns>
     public override CanMoveResult CanMove(Position to, Piece?[,] board)
     {
         int rankDistance = Color ? to.Rank - Rank : Rank - to.Rank;

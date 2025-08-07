@@ -1,6 +1,13 @@
 public class Position(int rank, int file)
 {
+    /// <summary>
+    /// The Rank of the Position (y)
+    /// </summary>
     public int Rank { get; } = rank;
+
+    /// <summary>
+    /// The File of the Position (x)
+    /// </summary>
     public int File { get; } = file;
 
     /// <summary>
@@ -9,6 +16,16 @@ public class Position(int rank, int file)
     /// </summary>
     public string GetNotation()
     {
+        if (Rank > 7 || Rank < 0)
+        {
+            throw new Exception("Invalid Position");
+        }
+
+        if (File > 7 || File < 0)
+        {
+            throw new Exception("Invalid File");
+        }
+
         return $"{Constants.FILES[File]}{Rank + 1}";
     }
 }

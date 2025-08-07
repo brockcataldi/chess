@@ -45,7 +45,9 @@ class GameScreen : IScreen
     }
 
     /// <summary>
-    /// Creates a new piece based on a character, either 'b', 'n', 'q', 'r'
+    /// Creates a new piece based on a character, either 'b', 'n', 'q', 'r'.
+    /// 
+    /// Meant to use for promoting pawns.
     /// </summary>
     /// <param name="piece">The piece to create</param>
     /// <param name="color">The color of the piece</param>
@@ -144,7 +146,7 @@ class GameScreen : IScreen
 
         while (!running)
         {
-            Display.Draw(Board, previousEntry);
+            Display.Draw(Board, previousEntry, true);
             Console.Write("Enter Move or Command: ");
             string? response = Console.ReadLine();
 

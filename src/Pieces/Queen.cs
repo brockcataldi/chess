@@ -1,5 +1,17 @@
+/// <summary>
+/// Queen Piece
+/// </summary>
+/// <param name="color">Color of the Queen</param>
+/// <param name="rank">Rank of the Queen</param>
+/// <param name="file">File of the Queen</param>
 class Queen(bool color, int rank, int file) : Piece('Q', color, rank, file)
 {
+    /// <summary>
+    /// Whether or not the Queen can move to a space
+    /// </summary>
+    /// <param name="to">The position to move to</param>
+    /// <param name="board">The current board</param>
+    /// <returns>Whether or not a piece can move, and why not.</returns>
     public override CanMoveResult CanMove(Position to, Piece?[,] board)
     {
         int rankDistance = to.Rank - Rank;
@@ -9,7 +21,7 @@ class Queen(bool color, int rank, int file) : Piece('Q', color, rank, file)
         int fileDirection = Math.Sign(fileDistance);
 
         rankDistance = Math.Abs(rankDistance);
-        
+
         if (fileDistance == 0)
         {
             rankDistance = Math.Abs(rankDistance);
@@ -22,7 +34,7 @@ class Queen(bool color, int rank, int file) : Piece('Q', color, rank, file)
                 }
             }
 
-            return CheckSquare(to, board);
+            return CheckSpace(to, board);
         }
 
         if (rankDistance == 0)
@@ -37,7 +49,7 @@ class Queen(bool color, int rank, int file) : Piece('Q', color, rank, file)
                 }
             }
 
-            return CheckSquare(to, board);
+            return CheckSpace(to, board);
         }
 
         if (rankDistance == Math.Abs(fileDistance))
@@ -51,16 +63,9 @@ class Queen(bool color, int rank, int file) : Piece('Q', color, rank, file)
                 }
             }
 
-            return CheckSquare(to, board);
+            return CheckSpace(to, board);
         }
 
         return new CanMoveResultError("Invalid Move");
-    }
-
-    public override Piece Move(Position to)
-    {
-        Rank = to.Rank;
-        File = to.File;
-        return this;
     }
 }

@@ -1,5 +1,17 @@
+/// <summary>
+/// Rook Piece
+/// </summary>
+/// <param name="color">Color of the Rook</param>
+/// <param name="rank">Rank of the Rook</param>
+/// <param name="file">File of the Rook</param>
 class Rook(bool color, int rank, int file) : Piece('R', color, rank, file)
 {
+    /// <summary>
+    /// Whether or not the Rook can move to a space
+    /// </summary>
+    /// <param name="to">The position to move to</param>
+    /// <param name="board">The current board</param>
+    /// <returns>Whether or not a piece can move, and why not.</returns>
     public override CanMoveResult CanMove(Position to, Piece?[,] board)
     {
         int rankDistance = to.Rank - Rank;
@@ -18,7 +30,7 @@ class Rook(bool color, int rank, int file) : Piece('R', color, rank, file)
                 }
             }
 
-            return CheckSquare(to, board);
+            return CheckSpace(to, board);
         }
 
         if (rankDistance == 0)
@@ -35,16 +47,9 @@ class Rook(bool color, int rank, int file) : Piece('R', color, rank, file)
                 }
             }
 
-            return CheckSquare(to, board);
+            return CheckSpace(to, board);
         }
 
         return new CanMoveResultError("Invalid Move");
-    }
-
-    public override Piece Move(Position to)
-    {
-        Rank = to.Rank;
-        File = to.File;
-        return this;
     }
 }

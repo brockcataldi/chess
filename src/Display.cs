@@ -18,7 +18,7 @@ class Display
         Console.Write("]");
         Console.ResetColor();
     }
-    public static void Draw(Piece?[,] board, EntryResult entry)
+    public static void Draw(Piece?[,] board, EntryResult entry, bool direction)
     {
         // Console.Clear();
         VerticalPadding(2);
@@ -26,27 +26,30 @@ class Display
 
         for (int i = 0; i < 8; i++)
         {
-            bool iOffset = i % 2 == 0;
 
-            Console.Write($" {i + 1} ");
-            
+            int a = direction ? 7 - i : i;
+
+            bool iOffset = a % 2 == 0;
+
+            Console.Write($" {a + 1} ");
+
             for (int j = 0; j < 8; j++)
             {
                 bool jOffset = j % 2 == 0;
-                ConsoleColor spaceColor = (jOffset) ? ConsoleColor.Green : ConsoleColor.White;
+                ConsoleColor spaceColor = jOffset ? ConsoleColor.Green : ConsoleColor.White;
 
                 if (!iOffset)
                 {
-                    spaceColor = (jOffset) ? ConsoleColor.White : ConsoleColor.Green;
+                    spaceColor = jOffset ? ConsoleColor.White : ConsoleColor.Green;
                 }
 
-                Piece? space = board[i,j];
+                Piece? space = board[a, j];
                 string piece = " ";
                 ConsoleColor pieceColor = ConsoleColor.White;
                 if (space != null)
                 {
                     piece = space.Symbol.ToString();
-                    pieceColor = (space.Color) ? ConsoleColor.Yellow : ConsoleColor.DarkBlue;
+                    pieceColor = space.Color ? ConsoleColor.Yellow : ConsoleColor.DarkBlue;
                 }
 
                 DrawSpace(piece, pieceColor, spaceColor);
