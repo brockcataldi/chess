@@ -1,71 +1,59 @@
-/// <summary>
-/// Queen Piece
-/// </summary>
-/// <param name="color">Color of the Queen</param>
-/// <param name="rank">Rank of the Queen</param>
-/// <param name="file">File of the Queen</param>
-class Queen(bool color, int rank, int file) : Piece('Q', color, rank, file)
+class Queen(bool color, int rank, int file) : Piece('Q', color, new int[8, 2] {
+		{1, 0},
+		{0, 1},
+		{-1, 0},
+		{0, -1},
+		{1, 1},
+		{1, -1},
+		{-1, 1},
+		{-1, -1}
+	}, rank, file)
 {
-    /// <summary>
-    /// Whether or not the Queen can move to a space
-    /// </summary>
-    /// <param name="to">The position to move to</param>
-    /// <param name="board">The current board</param>
-    /// <returns>Whether or not a piece can move, and why not.</returns>
-    public override CanMoveResult CanMove(Position to, Piece?[,] board)
-    {
-        int rankDistance = to.Rank - Rank;
-        int fileDistance = to.File - File;
 
-        int rankDirection = Math.Sign(rankDistance);
-        int fileDirection = Math.Sign(fileDistance);
+	public override List<Position> GetAvailableMoves(Piece?[,] board)
+	{
+		List<Position> moves = [];
+		bool[] stopped = [false, false, false, false];
 
-        rankDistance = Math.Abs(rankDistance);
+		for (int i = 1; i < 8; i++)
+		{
+			if (Utilities.AllTrue(stopped))
+			{
+				return moves;
+			}
 
-        if (fileDistance == 0)
-        {
-            rankDistance = Math.Abs(rankDistance);
+			for (int j = 0; j < 4; j++)
+			{
+				if (stopped[j] == false)
+				{
+					int rank = Position.Rank + (Vectors[j, 0] * i);
+					int file = Position.File + (Vectors[j, 1] * i);
 
-            for (int i = 1; i < rankDistance; i++)
-            {
-                if (board[Rank + (i * rankDirection), File] != null)
-                {
-                    return new CanMoveResultError("There's a piece blocking");
-                }
-            }
+					if (InBounds(rank) && InBounds(file))
+					{
+						Piece? space = board[rank, file];
 
-            return CheckSpace(to, board);
-        }
+						if (space == null)
+						{
+							moves.Add(new Position(rank, file));
+							continue;
+						}
 
-        if (rankDistance == 0)
-        {
-            fileDistance = Math.Abs(fileDistance);
+						if (space.Color != Color)
+						{
+							moves.Add(new Position(rank, file));
+						}
 
-            for (int i = 1; i < fileDistance; i++)
-            {
-                if (board[Rank, File + (i * fileDirection)] != null)
-                {
-                    return new CanMoveResultError("There's a piece blocking");
-                }
-            }
+						stopped[j] = true;
+					}
+					else
+					{
+						stopped[j] = true;
+					}
+				}
+			}
+		}
 
-            return CheckSpace(to, board);
-        }
-
-        if (rankDistance == Math.Abs(fileDistance))
-        {
-            for (int i = 1; i < rankDistance; i++)
-            {
-                if (board[Rank + (i * rankDirection),
-                          File + (i * fileDirection)] != null)
-                {
-                    return new CanMoveResultError("There's a piece blocking");
-                }
-            }
-
-            return CheckSpace(to, board);
-        }
-
-        return new CanMoveResultError("Invalid Move");
-    }
+		return moves;
+	}
 }

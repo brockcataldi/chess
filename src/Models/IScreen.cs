@@ -1,4 +1,4 @@
 interface IScreen
 {
-    public void Render(Game game);
+	public void Render(Game game);
 }

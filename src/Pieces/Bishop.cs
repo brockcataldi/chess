@@ -1,41 +1,56 @@
-/// <summary>
-/// Bishop Piece
-/// </summary>
-/// <param name="color">Color of the Bishop</param>
-/// <param name="rank">Rank of the Bishop</param>
-/// <param name="file">File of the Bishop</param>
-class Bishop(bool color, int rank, int file) : Piece('B', color, rank, file)
+class Bishop(bool color, int rank, int file) : Piece('B', color,
+	new int[4, 2] {
+		{1, 1},
+		{1, -1},
+		{-1, 1},
+		{-1, -1}
+	}, rank, file)
+
 {
-    /// <summary>
-    /// Whether or not the Bishop can move to a space
-    /// </summary>
-    /// <param name="to">The position to move to</param>
-    /// <param name="board">The current board</param>
-    /// <returns>Whether or not a piece can move, and why not.</returns>
-    public override CanMoveResult CanMove(Position to, Piece?[,] board)
-    {
-        int rankDistance = to.Rank - Rank;
-        int fileDistance = to.File - File;
+	public override List<Position> GetAvailableMoves(Piece?[,] board)
+	{
+		List<Position> moves = [];
+		bool[] stopped = [false, false, false, false];
 
-        int rankDirection = Math.Sign(rankDistance);
-        int fileDirection = Math.Sign(fileDistance);
+		for (int i = 1; i < 8; i++)
+		{
+			if (Utilities.AllTrue(stopped))
+			{
+				return moves;
+			}
 
-        rankDistance = Math.Abs(rankDistance);
+			for (int j = 0; j < 4; j++)
+			{
+				if (stopped[j] == false)
+				{
+					int rank = Position.Rank + (Vectors[j, 0] * i);
+					int file = Position.File + (Vectors[j, 1] * i);
 
-        if (rankDistance == Math.Abs(fileDistance))
-        {
-            for (int i = 1; i < rankDistance; i++)
-            {
-                if (board[Rank + (i * rankDirection),
-                          File + (i * fileDirection)] != null)
-                {
-                    return new CanMoveResultError("There's a piece blocBishop");
-                }
-            }
+					if (InBounds(rank) && InBounds(file))
+					{
+						Piece? space = board[rank, file];
 
-            return CheckSpace(to, board);
-        }
+						if (space == null)
+						{
+							moves.Add(new Position(rank, file));
+							continue;
+						}
 
-        return new CanMoveResultError("Invalid Move");
-    }
+						if (space.Color != Color)
+						{
+							moves.Add(new Position(rank, file));
+						}
+
+						stopped[j] = true;
+					}
+					else
+					{
+						stopped[j] = true;
+					}
+				}
+			}
+		}
+
+		return moves;
+	}
 }
