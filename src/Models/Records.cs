@@ -1,9 +1,11 @@
 abstract record EntryResult;
 record EntryResultValid : EntryResult;
+record EntryResultShow(List<Position> Positions): EntryResult;
 record EntryResultError(string Message) : EntryResult;
 
 abstract record CommandParserResult;
 record CommandParserResultMove(Position Start, Position End) : CommandParserResult;
+record CommandParserResultShow(Position Position): CommandParserResult;
 record CommandParserResultPromotion(Position Start, Position End, char Promotion) : CommandParserResult;
 record CommandParserResultError(string Message) : CommandParserResult;
 

@@ -15,33 +15,32 @@ class GameScreen : IScreen
 	{
 		this.Board = new Piece?[8, 8];
 
-		// Initialize pawns
 		for (int i = 0; i < 8; i++)
 		{
-			Board[1, i] = new Pawn(true, 1, i);
-			Board[6, i] = new Pawn(false, 6, i);
+			this.Board[1, i] = new Pawn(true, 1, i);
+			this.Board[6, i] = new Pawn(false, 6, i);
 		}
 
-		Board[0, 0] = new Rook(true, 0, 0);
-		Board[0, 7] = new Rook(true, 0, 7);
-		Board[7, 0] = new Rook(false, 7, 0);
-		Board[7, 7] = new Rook(false, 7, 7);
+		this.Board[0, 0] = new Rook(true, 0, 0);
+		this.Board[0, 7] = new Rook(true, 0, 7);
+		this.Board[7, 0] = new Rook(false, 7, 0);
+		this.Board[7, 7] = new Rook(false, 7, 7);
 
-		Board[0, 1] = new Knight(true, 0, 1);
-		Board[0, 6] = new Knight(true, 0, 6);
-		Board[7, 1] = new Knight(false, 7, 1);
-		Board[7, 6] = new Knight(false, 7, 6);
+		this.Board[0, 1] = new Knight(true, 0, 1);
+		this.Board[0, 6] = new Knight(true, 0, 6);
+		this.Board[7, 1] = new Knight(false, 7, 1);
+		this.Board[7, 6] = new Knight(false, 7, 6);
 
-		Board[0, 2] = new Bishop(true, 0, 2);
-		Board[0, 5] = new Bishop(true, 0, 5);
-		Board[7, 2] = new Bishop(false, 7, 2);
-		Board[7, 5] = new Bishop(false, 7, 5);
+		this.Board[0, 2] = new Bishop(true, 0, 2);
+		this.Board[0, 5] = new Bishop(true, 0, 5);
+		this.Board[7, 2] = new Bishop(false, 7, 2);
+		this.Board[7, 5] = new Bishop(false, 7, 5);
 
-		Board[0, 3] = new Queen(true, 0, 3);
-		Board[7, 3] = new Queen(false, 7, 3);
+		this.Board[0, 3] = new Queen(true, 0, 3);
+		this.Board[7, 3] = new Queen(false, 7, 3);
 
-		Board[0, 4] = new King(true, 0, 4);
-		Board[7, 4] = new King(false, 7, 4);
+		this.Board[0, 4] = new King(true, 0, 4);
+		this.Board[7, 4] = new King(false, 7, 4);
 	}
 
 	/// <summary>
@@ -73,24 +72,24 @@ class GameScreen : IScreen
 	/// <returns>EntryResult depending on what happened.</returns>
 	public EntryResult Move(CommandParserResultMove move)
 	{
-		Piece? space = Board[move.Start.Rank, move.Start.File];
+		Piece? space = this.Board[move.Start.Rank, move.Start.File];
 
 		if (space == null)
 		{
 			return new EntryResultError("Invalid Space.");
 		}
 
-		switch (space.CanMove(move.End, Board))
+		switch (space.CanMove(move.End, this.Board))
 		{
 			case CanMoveResultValid:
-				Board[move.Start.Rank, move.Start.File] = null;
-				Board[move.End.Rank, move.End.File] = space.Move(move.End);
+				this.Board[move.Start.Rank, move.Start.File] = null;
+				this.Board[move.End.Rank, move.End.File] = space.Move(move.End);
 				return new EntryResultValid();
 
 			case CanMoveResultEnPassant enPassant:
-				Board[move.Start.Rank, move.Start.File] = null;
-				Board[enPassant.Position.Rank, enPassant.Position.File] = null;
-				Board[move.End.Rank, move.End.File] = space.Move(move.End);
+				this.Board[move.Start.Rank, move.Start.File] = null;
+				this.Board[enPassant.Position.Rank, enPassant.Position.File] = null;
+				this.Board[move.End.Rank, move.End.File] = space.Move(move.End);
 				return new EntryResultValid();
 
 			case CanMoveResultPromote:
@@ -111,19 +110,19 @@ class GameScreen : IScreen
 	/// <returns>EntryResult depending on what happened.</returns>
 	public EntryResult Promote(CommandParserResultPromotion move)
 	{
-		Piece? space = Board[move.Start.Rank, move.Start.File];
+		Piece? space = this.Board[move.Start.Rank, move.Start.File];
 
 		if (space == null)
 		{
 			return new EntryResultError("Invalid Space.");
 		}
 
-		switch (space.CanMove(move.End, Board))
+		switch (space.CanMove(move.End, this.Board))
 		{
 			case CanMoveResultPromote:
 				Console.WriteLine("Promote");
-				Board[move.Start.Rank, move.Start.File] = null;
-				Board[move.End.Rank, move.End.File] = CreatePieceByChar(move.Promotion, space.Color, move.End.Rank, move.End.File);
+				this.Board[move.Start.Rank, move.Start.File] = null;
+				this.Board[move.End.Rank, move.End.File] = CreatePieceByChar(move.Promotion, space.Color, move.End.Rank, move.End.File);
 				return new EntryResultValid();
 
 			case CanMoveResultError error:
@@ -133,6 +132,23 @@ class GameScreen : IScreen
 			default:
 				return new EntryResultError("Invalid Move.");
 		}
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="piece"></param>
+	/// <returns></returns>
+	public EntryResult Show(CommandParserResultShow piece)
+	{
+		Piece? space = this.Board[piece.Position.Rank, piece.Position.File];
+
+		if (space == null)
+		{
+			return new EntryResultError("Invalid Space.");
+		}
+
+		return new EntryResultShow(space.GetAvailableMoves(this.Board));
 	}
 
 	/// <summary>
@@ -146,7 +162,11 @@ class GameScreen : IScreen
 
 		while (!running)
 		{
-			Display.Draw(Board, previousEntry, true);
+			Display.Draw(
+				this.Board,
+				previousEntry,
+				true
+			);
 			Console.Write("Enter Move or Command: ");
 			string? response = Console.ReadLine();
 
@@ -160,8 +180,9 @@ class GameScreen : IScreen
 
 			previousEntry = result switch
 			{
-				CommandParserResultMove move => Move(move),
-				CommandParserResultPromotion move => Promote(move),
+				CommandParserResultMove move => this.Move(move),
+				CommandParserResultPromotion move => this.Promote(move),
+				CommandParserResultShow piece => this.Show(piece),
 				CommandParserResultError error => new EntryResultError(error.Message),
 				_ => new EntryResultError("Try Again")
 			};

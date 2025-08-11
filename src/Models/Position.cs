@@ -22,7 +22,7 @@ public class Position(int rank, int file) : IEquatable<Position>
 			return false;
 		}
 
-		return Rank == other.Rank && File == other.File;
+		return this.Rank == other.Rank && this.File == other.File;
 	}
 
 	/// <summary>
@@ -31,16 +31,16 @@ public class Position(int rank, int file) : IEquatable<Position>
 	/// </summary>
 	public string GetNotation()
 	{
-		if (Rank > 7 || Rank < 0)
+		if (this.Rank > 7 || this.Rank < 0)
 		{
 			throw new Exception("Invalid Position");
 		}
 
-		if (File > 7 || File < 0)
+		if (this.File > 7 || this.File < 0)
 		{
 			throw new Exception("Invalid File");
 		}
 
-		return $"{Constants.FILES[File]}{Rank + 1}";
+		return $"{Constants.FILES[this.File]}{this.Rank + 1}";
 	}
 }

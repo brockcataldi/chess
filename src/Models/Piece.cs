@@ -2,13 +2,22 @@
 /// Piece Base Class
 /// </summary>
 /// <param name="symbol">A Character representation of the piece</param>
+/// <param name="vectors">The vectors a piece can move</param>
+/// <param name="max">The max tiles a piece can move</param>
 /// <param name="color">The Color of the Piece</param>
 /// <param name="rank">The Rank of the Piece</param>
 /// <param name="file">The file of the Piece</param>
-abstract class Piece(char symbol, bool color, int[,] vectors, int rank, int file)
+abstract class Piece(char symbol, int[,] vectors, int max, bool color, int rank, int file)
 {
-
+	/// <summary>
+	/// "Draggable" Vectors for each piece. Expecting [n, 2] depth.
+	/// </summary>
 	public int[,] Vectors { get; init; } = vectors;
+
+	/// <summary>
+	/// The maximum number of pieces a draggable piece can move.
+	/// </summary>
+	public int Max { get; init; } = max;
 
 	/// <summary>
 	/// Position of the Piece
@@ -26,7 +35,7 @@ abstract class Piece(char symbol, bool color, int[,] vectors, int rank, int file
 	public bool Color { get; init; } = color;
 
 	/// <summary>
-	/// Determines the result of moving a piece to a space.
+	/// Determines the result of moving a piece to a space. This will probably be deprecated very soon.
 	/// </summary>
 	/// <param name="to"></param>
 	/// <param name="board"></param>
@@ -40,7 +49,7 @@ abstract class Piece(char symbol, bool color, int[,] vectors, int rank, int file
 			return new CanMoveResultValid();
 		}
 
-		return (space.Color != Color) ?
+		return (space.Color != this.Color) ?
 			new CanMoveResultValid() :
 			new CanMoveResultError("Your piece is there");
 	}
@@ -63,7 +72,7 @@ abstract class Piece(char symbol, bool color, int[,] vectors, int rank, int file
 	/// <returns></returns>
 	public virtual CanMoveResult CanMove(Position to, Piece?[,] board)
 	{
-		List<Position> moves = GetAvailableMoves(board);
+		List<Position> moves = this.GetAvailableMoves(board);
 		if (moves.Contains(to))
 		{
 			return new CanMoveResultValid();
@@ -77,7 +86,52 @@ abstract class Piece(char symbol, bool color, int[,] vectors, int rank, int file
 	/// </summary>
 	/// <param name="board">The current board.</param>
 	/// <returns>All of the positions.</returns>
-	public abstract List<Position> GetAvailableMoves(Piece?[,] board);
+	public virtual List<Position> GetAvailableMoves(Piece?[,] board)
+	{
+		List<Position> moves = [];
+		bool[] stopped = new bool[this.Vectors.GetLength(0)];
+
+		for (int i = 1; i < this.Max; i++)
+		{
+			if (Utilities.AllTrue(stopped))
+			{
+				return moves;
+			}
+
+			for (int j = 0; j < this.Vectors.GetLength(0); j++)
+			{
+				if (stopped[j] == false)
+				{
+					int rank = this.Position.Rank + (this.Vectors[j, 0] * i);
+					int file = this.Position.File + (this.Vectors[j, 1] * i);
+
+					if (InBounds(rank) && InBounds(file))
+					{
+						Piece? space = board[rank, file];
+
+						if (space == null)
+						{
+							moves.Add(new Position(rank, file));
+							continue;
+						}
+
+						if (space.Color != this.Color)
+						{
+							moves.Add(new Position(rank, file));
+						}
+
+						stopped[j] = true;
+					}
+					else
+					{
+						stopped[j] = true;
+					}
+				}
+			}
+		}
+
+		return moves;
+	}
 
 	/// <summary>
 	/// Move the piece internally
@@ -86,7 +140,7 @@ abstract class Piece(char symbol, bool color, int[,] vectors, int rank, int file
 	/// <returns>The updated piece</returns>
 	public virtual Piece Move(Position to)
 	{
-		Position = to;
+		this.Position = to;
 		return this;
 	}
 }

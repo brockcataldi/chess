@@ -1,110 +1,92 @@
-/// <summary>
-/// Pawn Piece
-/// </summary>
-/// <param name="color">The Color of the Pawn</param>
-/// <param name="rank">Rank of the Pawn</param>
-/// <param name="file">File of the Pawn</param>
-class Pawn(bool color, int rank, int file) : Piece('P', color, new int[1, 2] { { 1, 0 } }, rank, file)
+class Pawn(bool color, int rank, int file) : 
+	Piece(
+		'P',
+		new int[1, 2] {
+			{ 1, 0 }
+		},
+		0,
+		color,
+		rank,
+		file
+	)
 {
-	/// <summary>
-	/// Whether on not the pawn is on the starting position
-	/// </summary>
 	public bool StartingPosition { get; set; } = true;
 
-	/// <summary>
-	/// Whether or not the pawn can be enpassantable.
-	/// </summary>
 	public bool EnPassant { get; set; } = false;
-
-	/// <summary>
-	/// Whether or not the Pawn can move to a space
-	/// </summary>
-	/// <param name="to">The position to move to</param>
-	/// <param name="board">The current board</param>
-	/// <returns>Whether or not a piece can move, and why not.</returns>
-	public override CanMoveResult CanMove(Position to, Piece?[,] board)
-	{
-		int rankDistance = Color ? to.Rank - Position.Rank : Position.Rank - to.Rank;
-		int fileDistance = Math.Abs(to.File - Position.File);
-		int direction = Color ? 1 : -1;
-
-		if (StartingPosition && rankDistance == 2)
-		{
-			if (board[Position.Rank + direction, Position.File] == null
-			&& board[to.Rank, Position.File] == null)
-			{
-				return new CanMoveResultValid();
-			}
-		}
-
-		if (rankDistance == 1)
-		{
-			if (fileDistance == 0)
-			{
-				bool shouldPromote = Color ? (Position.Rank + 1) == 7 : (Position.Rank - 1) == 0;
-
-				if (shouldPromote)
-				{
-					return new CanMoveResultPromote();
-				}
-
-				if (board[to.Rank, Position.File] == null)
-				{
-					return new CanMoveResultValid();
-				}
-			}
-
-			if (fileDistance == 1)
-			{
-				Piece? target = board[to.Rank, to.File];
-				if (target != null && target.Color != Color)
-				{
-					return new CanMoveResultValid();
-				}
-
-				Piece? enPassant = board[Position.Rank, to.File];
-				if (enPassant != null)
-				{
-					if (enPassant is Pawn pawn && pawn.EnPassant && pawn.Color != Color)
-					{
-						return new CanMoveResultEnPassant(pawn.Position);
-					}
-				}
-			}
-		}
-
-		return new CanMoveResultError("Invalid Move");
-	}
 
 	public override List<Position> GetAvailableMoves(Piece?[,] board)
 	{
+		List<Position> moves = [];
+		int direction = this.Color ? 1 : -1;
 
+		int forward = this.Position.Rank + direction;
+		int leftAtt = this.Position.File - 1;
+		int rightAtt = this.Position.File + 1;
 
-		throw new NotImplementedException();
+		if (board[forward, this.Position.File] == null)
+		{
+			moves.Add(new Position(forward, this.Position.File));
+
+			int jump = this.Position.Rank + (direction * 2);
+			if (this.StartingPosition && board[jump, this.Position.File] == null)
+			{
+				moves.Add(new Position(jump, this.Position.File));
+			}
+		}
+
+		if (InBounds(leftAtt))
+		{
+			Piece? left = board[forward, leftAtt];
+			if (left != null && left.Color != this.Color)
+			{
+				moves.Add(left.Position);
+			}
+
+			Piece? enPassant = board[this.Position.Rank, leftAtt];
+			if (enPassant != null)
+			{
+				if (enPassant is Pawn pawn && pawn.EnPassant && pawn.Color != this.Color)
+				{
+					moves.Add(new Position(forward, leftAtt));
+				}
+			}
+		}
+
+		if (InBounds(rightAtt))
+		{
+			Piece? right = board[forward, rightAtt];
+			if (right != null && right.Color != this.Color)
+			{
+				moves.Add(right.Position);
+			}
+			
+			Piece? enPassant = board[this.Position.Rank, rightAtt];
+			if (enPassant != null)
+			{
+				if (enPassant is Pawn pawn && pawn.EnPassant && pawn.Color != this.Color)
+				{
+					moves.Add(new Position(forward, rightAtt));
+				}
+			}
+		}
+
+		return moves;
 	}
 
-	/// <summary>
-	/// Updating internal mechanisms of the piece. 
-	/// </summary>
-	/// <param name="to">The move location.</param>
-	/// <param name="board">The state of the board.</param>
-	/// <returns>Updated Pawn</returns>
 	public override Piece Move(Position to)
 	{
-		int distance = Color ? to.Rank - Position.Rank : Position.Rank - to.Rank;
+		int distance = Math.Abs(this.Position.Rank - to.Rank);
 
-		if (StartingPosition == true && distance == 2)
+		if (this.StartingPosition == true && distance == 2)
 		{
-			EnPassant = true;
+			this.EnPassant = true;
 		}
 		else
 		{
-			EnPassant = false;
+			this.EnPassant = false;
 		}
 
-		StartingPosition = false;
-		Position = to;
-
-		return this;
+		this.StartingPosition = false;
+		return base.Move(to);
 	}
 }
