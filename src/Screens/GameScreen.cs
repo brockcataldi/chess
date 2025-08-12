@@ -81,21 +81,21 @@ class GameScreen : IScreen
 
 		switch (space.CanMove(move.End, this.Board))
 		{
-			case CanMoveResultValid:
+			case MoveStandard:
 				this.Board[move.Start.Rank, move.Start.File] = null;
 				this.Board[move.End.Rank, move.End.File] = space.Move(move.End);
 				return new EntryResultValid();
 
-			case CanMoveResultEnPassant enPassant:
+			case MoveEnPassant enPassant:
 				this.Board[move.Start.Rank, move.Start.File] = null;
-				this.Board[enPassant.Position.Rank, enPassant.Position.File] = null;
+				this.Board[enPassant.Target.Rank, enPassant.Target.File] = null;
 				this.Board[move.End.Rank, move.End.File] = space.Move(move.End);
 				return new EntryResultValid();
 
-			case CanMoveResultPromote:
+			case MovePromote:
 				return new EntryResultError("You need to add a piece character to promote.");
 
-			case CanMoveResultError error:
+			case MoveError error:
 				return new EntryResultError(error.Message);
 
 			default:
@@ -119,16 +119,14 @@ class GameScreen : IScreen
 
 		switch (space.CanMove(move.End, this.Board))
 		{
-			case CanMoveResultPromote:
+			case MovePromote:
 				Console.WriteLine("Promote");
 				this.Board[move.Start.Rank, move.Start.File] = null;
 				this.Board[move.End.Rank, move.End.File] = CreatePieceByChar(move.Promotion, space.Color, move.End.Rank, move.End.File);
 				return new EntryResultValid();
 
-			case CanMoveResultError error:
+			case MoveError error:
 				return new EntryResultError(error.Message);
-			case CanMoveResultEnPassant:
-			case CanMoveResultValid:
 			default:
 				return new EntryResultError("Invalid Move.");
 		}

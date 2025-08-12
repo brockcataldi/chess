@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/brock/Projects/cs/chess/chess.csproj": {}
+    "/Users/brock/Projects/chess/chess.csproj": {}
   },
   "projects": {
-    "/Users/brock/Projects/cs/chess/chess.csproj": {
+    "/Users/brock/Projects/chess/chess.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/brock/Projects/cs/chess/chess.csproj",
+        "projectUniqueName": "/Users/brock/Projects/chess/chess.csproj",
         "projectName": "chess",
-        "projectPath": "/Users/brock/Projects/cs/chess/chess.csproj",
+        "projectPath": "/Users/brock/Projects/chess/chess.csproj",
         "packagesPath": "/Users/brock/.nuget/packages/",
-        "outputPath": "/Users/brock/Projects/cs/chess/obj/",
+        "outputPath": "/Users/brock/Projects/chess/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/brock/.nuget/NuGet/NuGet.Config"

@@ -22,9 +22,9 @@ class Knight(bool color, int rank, int file) :
 	/// </summary>
 	/// <param name="board">The board</param>
 	/// <returns>The available moves</returns>
-	public override List<Position> GetAvailableMoves(Piece?[,] board)
+	public override List<Move> GetAvailableMoves(Piece?[,] board)
 	{
-		List<Position> moves = [];
+		List<Move> moves = [];
 
 		for (int i = 0; i < 8; i++)
 		{
@@ -37,7 +37,7 @@ class Knight(bool color, int rank, int file) :
 
 				if (space == null || space.Color != this.Color)
 				{
-					moves.Add(new Position(rank, file));
+					moves.Add(new MoveStandard(new Position(rank, file)));
 					continue;
 				}
 			}

@@ -14,10 +14,11 @@ class Pawn(bool color, int rank, int file) :
 
 	public bool EnPassant { get; set; } = false;
 
-	public override List<Position> GetAvailableMoves(Piece?[,] board)
+	public override List<Move> GetAvailableMoves(Piece?[,] board)
 	{
-		List<Position> moves = [];
+		List<Move> moves = [];
 		int direction = this.Color ? 1 : -1;
+		int promote = this.Color ? 7 : 0;
 
 		int forward = this.Position.Rank + direction;
 		int leftAtt = this.Position.File - 1;
@@ -25,12 +26,32 @@ class Pawn(bool color, int rank, int file) :
 
 		if (board[forward, this.Position.File] == null)
 		{
-			moves.Add(new Position(forward, this.Position.File));
+
+			if (forward == promote)
+			{
+				moves.Add(
+					new MovePromote(
+						new Position(forward, this.Position.File)
+					)
+				);	
+			}
+			else
+			{
+				moves.Add(
+					new MoveStandard(
+						new Position(forward, this.Position.File)
+					)
+				);				
+			}
 
 			int jump = this.Position.Rank + (direction * 2);
 			if (this.StartingPosition && board[jump, this.Position.File] == null)
 			{
-				moves.Add(new Position(jump, this.Position.File));
+				moves.Add(
+					new MoveStandard(
+						new Position(jump, this.Position.File)
+					)
+				);
 			}
 		}
 
@@ -39,7 +60,7 @@ class Pawn(bool color, int rank, int file) :
 			Piece? left = board[forward, leftAtt];
 			if (left != null && left.Color != this.Color)
 			{
-				moves.Add(left.Position);
+				moves.Add(new MoveStandard(left.Position));
 			}
 
 			Piece? enPassant = board[this.Position.Rank, leftAtt];
@@ -47,9 +68,15 @@ class Pawn(bool color, int rank, int file) :
 			{
 				if (enPassant is Pawn pawn && pawn.EnPassant && pawn.Color != this.Color)
 				{
-					moves.Add(new Position(forward, leftAtt));
+					moves.Add(
+						new MoveEnPassant(
+							new Position(forward, leftAtt),
+							pawn.Position
+						)
+					);
 				}
 			}
+
 		}
 
 		if (InBounds(rightAtt))
@@ -57,7 +84,7 @@ class Pawn(bool color, int rank, int file) :
 			Piece? right = board[forward, rightAtt];
 			if (right != null && right.Color != this.Color)
 			{
-				moves.Add(right.Position);
+				moves.Add(new MoveStandard(right.Position));
 			}
 			
 			Piece? enPassant = board[this.Position.Rank, rightAtt];
@@ -65,7 +92,12 @@ class Pawn(bool color, int rank, int file) :
 			{
 				if (enPassant is Pawn pawn && pawn.EnPassant && pawn.Color != this.Color)
 				{
-					moves.Add(new Position(forward, rightAtt));
+					moves.Add(
+						new MoveEnPassant(
+							new Position(forward, leftAtt),
+							pawn.Position
+						)
+					);
 				}
 			}
 		}

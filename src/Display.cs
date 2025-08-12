@@ -63,9 +63,12 @@ class Display
 					pieceColor = space.Color ? ConsoleColor.Yellow : ConsoleColor.DarkBlue;
 				}
 
-				if (entry is EntryResultShow show && show.Positions.Contains(new Position(y, j)))
+				if (entry is EntryResultShow show)
 				{
-					spaceColor = ConsoleColor.Magenta;
+					Move? has = show.Moves.SingleOrDefault(m => m.Position == new Position(y, j));
+					if (has != null) {
+						spaceColor = ConsoleColor.Magenta;
+					}
 				}
 
 				DrawSpace(piece, pieceColor, spaceColor);
