@@ -75,6 +75,7 @@ abstract class Piece(char symbol, int[,] vectors, int max, bool color, int rank,
 
 		for (int i = 1; i < this.Max; i++)
 		{
+			// I might need to come up with a more clever way to do this?
 			if (Utilities.AllTrue(stopped))
 			{
 				return moves;
@@ -84,31 +85,31 @@ abstract class Piece(char symbol, int[,] vectors, int max, bool color, int rank,
 			{
 				if (stopped[j] == false)
 				{
-					int rank = this.Position.Rank + (this.Vectors[j, 0] * i);
-					int file = this.Position.File + (this.Vectors[j, 1] * i);
-
-					if (InBounds(rank) && InBounds(file))
-					{
-						Piece? space = board[rank, file];
-
-						if (space == null)
-						{
-							moves.Add(new MoveStandard(new Position(rank, file)));
-							continue;
-						}
-
-						if (space.Color != this.Color)
-						{
-							moves.Add(new MoveStandard(new Position(rank, file)));
-						}
-
-						stopped[j] = true;
-					}
-					else
-					{
-						stopped[j] = true;
-					}
+					continue;
 				}
+
+				int rank = this.Position.Rank + (this.Vectors[j, 0] * i);
+				int file = this.Position.File + (this.Vectors[j, 1] * i);
+
+				if (!InBounds(rank) && !InBounds(file))
+				{
+					stopped[j] = true;
+				}
+
+				Piece? space = board[rank, file];
+
+				if (space == null)
+				{
+					moves.Add(new MoveStandard(new Position(rank, file)));
+					continue;
+				}
+
+				if (space.Color != this.Color)
+				{
+					moves.Add(new MoveStandard(new Position(rank, file)));
+				}
+
+				stopped[j] = true;
 			}
 		}
 
