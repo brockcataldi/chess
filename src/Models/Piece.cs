@@ -94,6 +94,7 @@ abstract class Piece(char symbol, int[,] vectors, int max, bool color, int rank,
 				if (!InBounds(rank) && !InBounds(file))
 				{
 					stopped[j] = true;
+					continue;
 				}
 
 				Piece? space = board[rank, file];
